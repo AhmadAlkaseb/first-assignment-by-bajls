@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Info Generator</title>
+    <style>
+        :root {
+            --bg: #f4efe6;
+            --surface: rgba(255, 252, 246, 0.88);
+            --surface-strong: #fffaf2;
+            --surface-deep: #17302b;
+            --ink: #1d2b28;
+            --muted: #5f6e68;
+            --line: rgba(29, 43, 40, 0.12);
+            --accent: #0f8a6c;
+            --accent-strong: #0a6d56;
+            --accent-soft: rgba(15, 138, 108, 0.12);
+            --danger: #6f2e2e;
+            --danger-soft: #fff0ed;
+            --shadow: 0 24px 60px rgba(55, 45, 24, 0.14);
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Georgia, "Times New Roman", serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(15, 138, 108, 0.16), transparent 28%),
+                linear-gradient(135deg, #efe3d2 0%, #f8f3eb 48%, #e9f4ef 100%);
+        }
+
+        .page {
+            width: min(1080px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 32px 0 56px;
+        }
+
+        .hero,
+        .panel,
+        .result-shell {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-xl);
+            background: linear-gradient(140deg, rgba(255, 250, 242, 0.96), rgba(246, 252, 249, 0.9));
+            box-shadow: var(--shadow);
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 36px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: auto -80px -120px auto;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(15, 138, 108, 0.2), transparent 65%);
+            pointer-events: none;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+            font-size: 0.86rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 18px 0 12px;
+            max-width: 10ch;
+            font-size: clamp(2.8rem, 7vw, 5rem);
+            line-height: 0.94;
+            font-weight: 700;
+        }
+
+        .lead {
+            max-width: 60ch;
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-top: 28px;
+        }
+
+        .summary-card {
+            padding: 16px 18px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .summary-card strong {
+            display: block;
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+
+        .panel {
+            margin-top: 24px;
+            padding: 26px;
+        }
+
+        .panel-header {
+            display: grid;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h2,
+        .result-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .panel-header p,
+        .result-header p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1.5fr 180px auto;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field label {
+            font-size: 0.95rem;
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .select-input,
+        .count-input,
+        button {
+            font: inherit;
+        }
+
+        .select-input,
+        .count-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            background: var(--surface-strong);
+            color: var(--ink);
+        }
+
+        .count-wrap {
+            transition: opacity 180ms ease;
+        }
+
+        .count-wrap.hidden {
+            opacity: 0.45;
+        }
+
+        button {
+            border: 0;
+            border-radius: 999px;
+            padding: 14px 22px;
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+            box-shadow: 0 12px 24px rgba(15, 138, 108, 0.18);
+        }
+
+        button:hover {
+            background: var(--accent-strong);
+            transform: translateY(-1px);
+        }
+
+        .helper {
+            margin: 16px 0 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .result-shell {
+            margin-top: 24px;
+            padding: 26px;
+        }
+
+        .result-header {
+            display: grid;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            align-self: start;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .status.loading {
+            background: #eef7f4;
+        }
+
+        .status.error {
+            background: var(--danger-soft);
+            color: var(--danger);
+        }
+
+        .empty-state,
+        .detail-card,
+        .person-card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.78);
+        }
+
+        .empty-state {
+            padding: 28px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.7;
+        }
+
+        .detail-card,
+        .person-card {
+            padding: 22px;
+        }
+
+        .detail-card h3,
+        .person-card h3 {
+            margin: 0 0 16px;
+            font-size: 1.25rem;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .detail-item {
+            padding: 14px;
+            border-radius: var(--radius-md);
+            background: #f8f4ec;
+        }
+
+        .detail-item .label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .detail-item .value {
+            display: block;
+            font-size: 1.05rem;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .bulk-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .person-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .pill {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent-strong);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .person-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .sub-card {
+            padding: 14px;
+            border-radius: var(--radius-md);
+            background: #f8f4ec;
+        }
+
+        .sub-card strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.82rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .sub-card span {
+            display: block;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            white-space: normal;
+        }
+
+        .footer {
+            margin-top: 28px;
+            color: var(--muted);
+            text-align: center;
+            font-size: 0.96rem;
+        }
+
+        @media (max-width: 820px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .page {
+                width: min(100% - 20px, 1080px);
+                padding-top: 20px;
+            }
+
+            .hero,
+            .panel,
+            .result-shell {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+    <section class="hero">
+        <span class="eyebrow">Fake Info API</span>
+        <h1>Simple fake data, beautifully packaged.</h1>
+        <p class="lead">
+            Choose one of the nine generators, fetch data from the backend, and view the result in a
+            cleaner human-friendly layout instead of raw JSON.
+        </p>
+        <div class="summary">
+            <article class="summary-card">
+                <strong>9</strong>
+                <span>Available generators</span>
+            </article>
+            <article class="summary-card">
+                <strong>1</strong>
+                <span>Single-page interface</span>
+            </article>
+            <article class="summary-card">
+                <strong>2-100</strong>
+                <span>Bulk fake persons</span>
+            </article>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <h2>Generator</h2>
+            <p>Select what you want to generate, then fetch it from the Spring Boot backend.</p>
+        </div>
+
+        <div class="controls">
+            <div class="field">
+                <label for="generator-select">Choose a generator</label>
+                <select id="generator-select" class="select-input">
+                    <option value="cpr">Fake cpr</option>
+                    <option value="name-gender">Fake first name, last name and gender</option>
+                    <option value="name-gender-dob">Fake first name, last name, gender and date of birth</option>
+                    <option value="cpr-name-gender">Fake cpr, first name, last name and gender</option>
+                    <option value="cpr-name-gender-dob">Fake cpr, first name, last name, gender and date of birth</option>
+                    <option value="address">Fake address</option>
+                    <option value="phone">Fake mobile phone number</option>
+                    <option value="person">All information for a fake person</option>
+                    <option value="person-bulk">Bulk fake person information</option>
+                </select>
+            </div>
+
+            <div class="field count-wrap hidden" id="count-wrap">
+                <label for="count-input">How many persons</label>
+                <input id="count-input" class="count-input" type="number" min="2" max="100" value="5">
+            </div>
+
+            <button id="generate-button" type="button">Generate</button>
+        </div>
+
+        <p class="helper" id="selection-description">
+            Return a fake cpr number.
+        </p>
+    </section>
+
+    <section class="result-shell">
+        <div class="result-header">
+            <span class="status" id="status-pill">Ready</span>
+            <h2>Result</h2>
+            <p id="result-caption">Your generated response will appear here in a cleaner layout.</p>
+        </div>
+        <div id="result-content" class="empty-state">
+            Pick a generator above and click <strong>Generate</strong>.
+        </div>
+    </section>
+
+    <p class="footer">Run the backend once, then open <strong>/</strong> to use both the UI and the API together.</p>
+</main>
+
+<script>
+    const generatorSelect = document.getElementById("generator-select");
+    const countWrap = document.getElementById("count-wrap");
+    const countInput = document.getElementById("count-input");
+    const generateButton = document.getElementById("generate-button");
+    const statusPill = document.getElementById("status-pill");
+    const resultCaption = document.getElementById("result-caption");
+    const resultContent = document.getElementById("result-content");
+    const selectionDescription = document.getElementById("selection-description");
+
+    const generatorConfig = {
+        "cpr": {
+            endpoint: "/cpr",
+            description: "Return a fake CPR number.",
+            caption: "Showing one generated CPR number."
+        },
+        "name-gender": {
+            endpoint: "/name-gender",
+            description: "Return a fake first name, last name and gender.",
+            caption: "Showing a generated name and gender."
+        },
+        "name-gender-dob": {
+            endpoint: "/name-gender-dob",
+            description: "Return a fake first name, last name, gender and date of birth.",
+            caption: "Showing a generated name, gender and date of birth."
+        },
+        "cpr-name-gender": {
+            endpoint: "/cpr-name-gender",
+            description: "Return a fake CPR, first name, last name and gender.",
+            caption: "Showing CPR, name and gender together."
+        },
+        "cpr-name-gender-dob": {
+            endpoint: "/cpr-name-gender-dob",
+            description: "Return a fake CPR, first name, last name, gender and date of birth.",
+            caption: "Showing CPR, name, gender and date of birth together."
+        },
+        "address": {
+            endpoint: "/address",
+            description: "Return a fake address.",
+            caption: "Showing one generated address."
+        },
+        "phone": {
+            endpoint: "/phone",
+            description: "Return a fake mobile phone number.",
+            caption: "Showing one generated mobile number."
+        },
+        "person": {
+            endpoint: "/person",
+            description: "Return all information for a fake person.",
+            caption: "Showing one complete fake person."
+        },
+        "person-bulk": {
+            endpoint: "/person",
+            description: "Return all information for 2 to 100 fake persons in one request.",
+            caption: "Showing multiple complete fake persons."
+        }
+    };
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function titleize(key) {
+        return key
+            .replace(/([A-Z])/g, " $1")
+            .replace(/_/g, " ")
+            .replace(/^./, (match) => match.toUpperCase());
+    }
+
+    function formatValue(value) {
+        if (value === null || value === undefined || value === "") {
+            return "Not available";
+        }
+        return String(value);
+    }
+
+    function renderDetails(title, entries) {
+        const items = entries.map((entry) => {
+            return `
+                <div class="detail-item">
+                    <span class="label">${escapeHtml(entry.label)}</span>
+                    <span class="value">${escapeHtml(formatValue(entry.value))}</span>
+                </div>
+            `;
+        }).join("");
+
+        return `
+            <article class="detail-card">
+                <h3>${escapeHtml(title)}</h3>
+                <div class="detail-grid">${items}</div>
+            </article>
+        `;
+    }
+
+    function renderAddress(address) {
+        return renderDetails("Address", [
+            { label: "Street", value: address.street },
+            { label: "Number", value: address.number },
+            { label: "Floor", value: address.floor },
+            { label: "Door", value: address.door },
+            { label: "Postal code", value: address.postal_code || address.postalCode },
+            { label: "Town", value: address.town_name || address.townName }
+        ]);
+    }
+
+    function renderSinglePerson(person, heading) {
+        return `
+            <article class="person-card">
+                <h3>${escapeHtml(heading)}</h3>
+                <div class="person-meta">
+                    <span class="pill">${escapeHtml(formatValue(person.firstName))} ${escapeHtml(formatValue(person.lastName))}</span>
+                    <span class="pill">${escapeHtml(formatValue(person.gender))}</span>
+                    <span class="pill">${escapeHtml(formatValue(person.CPR || person.cpr))}</span>
+                </div>
+                <div class="person-layout">
+                    <div class="sub-card">
+                        <strong>Identity</strong>
+                        <span>First name: ${escapeHtml(formatValue(person.firstName))}</span>
+                        <span>Last name: ${escapeHtml(formatValue(person.lastName))}</span>
+                        <span>Gender: ${escapeHtml(formatValue(person.gender))}</span>
+                        <span>Date of birth: ${escapeHtml(formatValue(person.birthDate))}</span>
+                        <span>cpr: ${escapeHtml(formatValue(person.CPR || person.cpr))}</span>
+                    </div>
+                    <div class="sub-card">
+                        <strong>Address</strong>
+                        <span>Street: ${escapeHtml(formatValue(person.address && person.address.street))}</span>
+                        <span>Number: ${escapeHtml(formatValue(person.address && person.address.number))}</span>
+                        <span>Floor: ${escapeHtml(formatValue(person.address && person.address.floor))}</span>
+                        <span>Door: ${escapeHtml(formatValue(person.address && person.address.door))}</span>
+                        <span>Postal code: ${escapeHtml(formatValue(person.address && (person.address.postal_code || person.address.postalCode)))}</span>
+                        <span>Town: ${escapeHtml(formatValue(person.address && (person.address.town_name || person.address.townName)))}</span>
+                    </div>
+                    <div class="sub-card">
+                        <strong>Contact</strong>
+                        <span>Mobile phone: ${escapeHtml(formatValue(person.phoneNumber))}</span>
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+
+    function renderBulkPeople(people) {
+        const cards = people.map((person, index) => {
+            return renderSinglePerson(person, "Person " + (index + 1));
+        }).join("");
+
+        return `<div class="bulk-grid">${cards}</div>`;
+    }
+
+    function renderObject(title, data) {
+        if (Array.isArray(data)) {
+            return renderBulkPeople(data);
+        }
+
+        if (data.address && data.phoneNumber) {
+            return renderSinglePerson(data, title);
+        }
+
+        if (data.address && Object.keys(data).length === 1) {
+            return renderAddress(data.address);
+        }
+
+        const entries = Object.entries(data).map(([key, value]) => ({
+            label: titleize(key === "CPR" ? "CPR" : key),
+            value: value
+        }));
+
+        return renderDetails(title, entries);
+    }
+
+    function setStatus(text, state) {
+        statusPill.textContent = text;
+        statusPill.className = "status" + (state ? " " + state : "");
+    }
+
+    function updateSelectionUi() {
+        const selected = generatorConfig[generatorSelect.value];
+        const isBulk = generatorSelect.value === "person-bulk";
+        countWrap.classList.toggle("hidden", !isBulk);
+        countInput.disabled = !isBulk;
+        selectionDescription.textContent = selected.description;
+        resultCaption.textContent = selected.caption;
+    }
+
+    async function generate() {
+        const selected = generatorConfig[generatorSelect.value];
+        let url = selected.endpoint;
+
+        if (generatorSelect.value === "person-bulk") {
+            const count = Number(countInput.value);
+
+            if (!Number.isInteger(count) || count < 2 || count > 100) {
+                setStatus("Invalid input", "error");
+                resultContent.className = "empty-state";
+                resultContent.innerHTML = "Please choose a whole number between <strong>2</strong> and <strong>100</strong>.";
+                return;
+            }
+
+            url += "?n=" + count;
+        }
+
+        generateButton.disabled = true;
+        setStatus("Loading", "loading");
+        resultContent.className = "empty-state";
+        resultContent.textContent = "Fetching data from the backend...";
+
+        try {
+            const response = await fetch(url, {
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("Request failed with status " + response.status);
+            }
+
+            const data = await response.json();
+            setStatus("Success", "");
+            resultContent.className = "";
+            resultContent.innerHTML = renderObject("Generated result", data);
+        } catch (error) {
+            setStatus("Request failed", "error");
+            resultContent.className = "empty-state";
+            resultContent.innerHTML = "Could not load data from the backend.<br><br>" + escapeHtml(error.message);
+        } finally {
+            generateButton.disabled = false;
+        }
+    }
+
+    generatorSelect.addEventListener("change", updateSelectionUi);
+    generateButton.addEventListener("click", generate);
+
+    updateSelectionUi();
+</script>
+</body>
+</html>
