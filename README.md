@@ -63,6 +63,7 @@ Det betyder, at vi allerede nu har kontinuerlig integration.
 
 For at aktivere SonarQube i GitHub Actions skal du sætte disse repository-indstillinger:
 
+
 - Repository variable: `SONAR_HOST_URL`
 - Repository variable: `SONAR_PROJECT_KEY`
 - Repository variable: `SONAR_ORGANIZATION`
