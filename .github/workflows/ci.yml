@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  build-test:
+  backend:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,12 +28,6 @@ jobs:
           java-version: "17"
           cache: maven
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: npm
-
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -41,17 +35,11 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Install Playwright dependencies
-        run: npm ci
+      - name: Build application
+        run: mvn --batch-mode --no-transfer-progress -DskipTests package
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: Run Maven verify
-        run: mvn --batch-mode --no-transfer-progress verify
-
-      - name: Run Playwright tests
-        run: npm run test:e2e
+      - name: Run integration tests
+        run: mvn --batch-mode --no-transfer-progress -Dtest=*IntegrationTest test
 
       - name: Run SonarQube analysis
         env:
@@ -75,3 +63,25 @@ jobs:
 
       - name: Build Docker image
         run: docker build --tag fake-info:ci .
+
+  frontend-e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install Playwright dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: npm run test:e2e

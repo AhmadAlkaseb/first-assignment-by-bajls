@@ -56,7 +56,8 @@ Frontend og backend kører sammen i samme Spring Boot-applikation.
 
 Projektet er sat op med GitHub Actions i `.github/workflows`.
 
-- `ci.yml` kører ved push til `main` og ved pull requests mod `main`. Den bygger projektet med `mvn verify`, kører Playwright browser-tests, kan køre SonarQube-analyse og validerer også Docker-buildet.
+- `ci.yml` kører ved push til `main` og ved pull requests mod `main`.
+- CI er delt i to parallelle jobs: en backend-shard til build, integrationstests, SonarQube og Docker-build, og en frontend-shard til Playwright browser-tests.
 
 Det betyder, at vi allerede nu har kontinuerlig integration.
 
@@ -74,6 +75,7 @@ npm run test:e2e:headed
 
 - `src/test/java` er til Java- og JUnit-tests, som Maven kører via `mvn test` og `mvn verify`.
 - `src/test/e2e` er til Playwright-tests, som køres via `npm run test:e2e`.
+- `src/test/java/integrationtests` er til integrationstests mod de rigtige HTTP-endpoints, og de køres som et separat step i CI.
 - Maven kører ikke `.js`-filer. Playwright køres derfor som et separat CI-step i stedet for gennem `maven-surefire-plugin`.
 
 ## SonarQube
