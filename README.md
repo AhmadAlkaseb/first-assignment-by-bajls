@@ -55,9 +55,19 @@ Frontend og backend kører sammen i samme Spring Boot-applikation.
 
 Projektet er sat op med GitHub Actions i `.github/workflows`.
 
-- `ci.yml` kører ved push til `main` og ved pull requests mod `main`. Den bygger projektet med `mvn verify` og validerer også Docker-buildet.
+- `ci.yml` kører ved push til `main` og ved pull requests mod `main`. Den bygger projektet med `mvn verify`, kan køre SonarQube-analyse og validerer også Docker-buildet.
 
 Det betyder, at vi allerede nu har kontinuerlig integration.
+
+## SonarQube
+
+For at aktivere SonarQube i GitHub Actions skal du sætte disse repository-indstillinger:
+
+- Repository variable: `SONAR_HOST_URL`
+- Repository variable: `SONAR_PROJECT_KEY`
+- Repository secret: `SONAR_TOKEN`
+
+Når de er sat, kører `ci.yml` automatisk SonarQube-analyse efter `mvn verify`. Hvis de ikke er sat endnu, springes SonarQube-trinnet over.
 
 ## API endpoints
 
