@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 
 test('test', async ({ page }) => {
-  await page.goto('http://localhost:8080/');
+  await page.goto('/');
 
   await page.getByRole('button', { name: 'Generate' }).click();
 
