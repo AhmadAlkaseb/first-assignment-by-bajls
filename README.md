@@ -51,6 +51,14 @@ http://localhost:8080/
 
 Frontend og backend kører sammen i samme Spring Boot-applikation.
 
+## CI/CD
+
+Projektet er sat op med GitHub Actions i `.github/workflows`.
+
+- `ci.yml` kører ved push til `main` og ved pull requests mod `main`. Den bygger projektet med `mvn verify` og validerer også Docker-buildet.
+
+Det betyder, at vi allerede nu har kontinuerlig integration.
+
 ## API endpoints
 
 | Method | Endpoint |
