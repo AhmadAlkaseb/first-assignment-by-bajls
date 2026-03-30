@@ -28,6 +28,12 @@ jobs:
           java-version: "17"
           cache: maven
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
       - name: Cache SonarQube packages
         uses: actions/cache@v4
         with:
@@ -35,8 +41,17 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
+      - name: Install Playwright dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Run Maven verify
         run: mvn --batch-mode --no-transfer-progress verify
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
 
       - name: Run SonarQube analysis
         env:

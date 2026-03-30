@@ -64,11 +64,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <failIfNoTests>false</failIfNoTests>
+                    <failIfNoTests>true</failIfNoTests>
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*Tests.java</include>
                         <include>**/*TestCase.java</include>
+                        <include>**/*spec.js</include>
                     </includes>
                 </configuration>
             </plugin>

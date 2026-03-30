@@ -9,6 +9,7 @@ Maven-baseret Java REST API i mappen `first-assignment-by-bajls`, der genererer 
 - Spring Boot
 - Hibernate / Spring Data JPA
 - PostgreSQL
+- Playwright
 
 ## Datakilder
 
@@ -51,13 +52,29 @@ http://localhost:8080/
 
 Frontend og backend kører sammen i samme Spring Boot-applikation.
 
-## CI/CD
+## CI
 
 Projektet er sat op med GitHub Actions i `.github/workflows`.
 
-- `ci.yml` kører ved push til `main` og ved pull requests mod `main`. Den bygger projektet med `mvn verify`, kan køre SonarQube-analyse og validerer også Docker-buildet.
+- `ci.yml` kører ved push til `main` og ved pull requests mod `main`. Den bygger projektet med `mvn verify`, kører Playwright browser-tests, kan køre SonarQube-analyse og validerer også Docker-buildet.
 
 Det betyder, at vi allerede nu har kontinuerlig integration.
+
+## Playwright
+
+```bash
+npm ci
+npx playwright install
+npm run test:e2e
+npm run test:e2e:codegen
+npm run test:e2e:headed
+```
+
+## Teststruktur
+
+- `src/test/java` er til Java- og JUnit-tests, som Maven kører via `mvn test` og `mvn verify`.
+- `src/test/e2e` er til Playwright-tests, som køres via `npm run test:e2e`.
+- Maven kører ikke `.js`-filer. Playwright køres derfor som et separat CI-step i stedet for gennem `maven-surefire-plugin`.
 
 ## SonarQube
 
