@@ -42,17 +42,19 @@ jobs:
         env:
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
           SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: bash
         run: |
-          if [ -z "${SONAR_HOST_URL}" ] || [ -z "${SONAR_PROJECT_KEY}" ] || [ -z "${SONAR_TOKEN}" ]; then
-            echo "Skipping SonarQube analysis because SONAR_HOST_URL, SONAR_PROJECT_KEY, or SONAR_TOKEN is missing."
+          if [ -z "${SONAR_HOST_URL}" ] || [ -z "${SONAR_PROJECT_KEY}" ] || [ -z "${SONAR_ORGANIZATION}" ] || [ -z "${SONAR_TOKEN}" ]; then
+            echo "Skipping SonarQube analysis because SONAR_HOST_URL, SONAR_PROJECT_KEY, SONAR_ORGANIZATION, or SONAR_TOKEN is missing."
             exit 0
           fi
 
           mvn --batch-mode --no-transfer-progress \
-            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar \
             -Dsonar.projectKey="${SONAR_PROJECT_KEY}" \
+            -Dsonar.organization="${SONAR_ORGANIZATION}" \
             -Dsonar.host.url="${SONAR_HOST_URL}" \
             -Dsonar.token="${SONAR_TOKEN}"
 

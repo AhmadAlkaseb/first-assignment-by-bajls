@@ -65,7 +65,14 @@ For at aktivere SonarQube i GitHub Actions skal du sætte disse repository-indst
 
 - Repository variable: `SONAR_HOST_URL`
 - Repository variable: `SONAR_PROJECT_KEY`
+- Repository variable: `SONAR_ORGANIZATION`
 - Repository secret: `SONAR_TOKEN`
+
+For SonarCloud vil værdierne typisk være:
+
+- `SONAR_HOST_URL=https://sonarcloud.io`
+- `SONAR_PROJECT_KEY=AhmadAlkaseb_first-assignment-by-bajls`
+- `SONAR_ORGANIZATION=` din SonarCloud-organisation
 
 Når de er sat, kører `ci.yml` automatisk SonarQube-analyse efter `mvn verify`. Hvis de ikke er sat endnu, springes SonarQube-trinnet over.
 
