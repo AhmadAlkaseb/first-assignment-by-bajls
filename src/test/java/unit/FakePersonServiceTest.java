@@ -182,9 +182,9 @@ class FakePersonServiceTest {
                 .isTrue();
     }
 
-    // =========================================================================
+    
     // 1. CPR GENERATION  —  getFakeCpr()
-    // =========================================================================
+    
 
     @Nested
     @DisplayName("1. getFakeCpr()")
@@ -283,9 +283,9 @@ class FakePersonServiceTest {
         }
     }
 
-    // =========================================================================
+    
     // 2. NAME + GENDER GENERATION  —  getNameGender()
-    // =========================================================================
+    
 
     @Nested
     @DisplayName("2. getNameGender()")
@@ -374,9 +374,9 @@ class FakePersonServiceTest {
         }
     }
 
-    // =========================================================================
+    
     // 3. NAME + GENDER + DATE OF BIRTH  —  getNameGenderDob()
-    // =========================================================================
+    
 
     @Nested
     @DisplayName("3. getNameGenderDob()")
@@ -447,9 +447,9 @@ class FakePersonServiceTest {
         }
     }
 
-    // =========================================================================
+    
     // 4. ADDRESS GENERATION  —  getAddress()
-    // =========================================================================
+    
 
     @Nested
     @DisplayName("4. getAddress()")
@@ -568,9 +568,9 @@ class FakePersonServiceTest {
         }
     }
 
-    // =========================================================================
+    
     // 5. PHONE NUMBER GENERATION  —  getPhoneNumber()
-    // =========================================================================
+    
 
     @Nested
     @DisplayName("5. getPhoneNumber()")
@@ -634,9 +634,9 @@ class FakePersonServiceTest {
         }
     }
 
-    // =========================================================================
+    
     // 6. FULL PERSON GENERATION  —  getFakePerson()
-    // =========================================================================
+    
 
     @Nested
     @DisplayName("6. getFakePerson()")
@@ -724,9 +724,9 @@ class FakePersonServiceTest {
         }
     }
 
-    // =========================================================================
+    
     // 7. CROSS-FIELD CONSISTENCY  —  CPR ↔ DOB ↔ Gender
-    // =========================================================================
+    
 
     @Nested
     @DisplayName("7. Cross-field consistency")
@@ -845,9 +845,9 @@ class FakePersonServiceTest {
         }
     }
 
-    // =========================================================================
+    
     // 8. BULK GENERATION  —  getFakePersons(n)
-    // =========================================================================
+    
 
     @Nested
     @DisplayName("8. getFakePersons(n) — bulk generation")
