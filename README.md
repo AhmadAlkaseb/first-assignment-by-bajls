@@ -9,6 +9,7 @@ Maven-baseret Java REST API i mappen `first-assignment-by-bajls`, der genererer 
 - Spring Boot
 - Hibernate / Spring Data JPA
 - PostgreSQL
+- Playwright
 
 ## Datakilder
 
@@ -50,6 +51,50 @@ http://localhost:8080/
 ```
 
 Frontend og backend kører sammen i samme Spring Boot-applikation.
+
+## CI
+
+Projektet er sat op med GitHub Actions i `.github/workflows`.
+
+- `ci.yml` kører ved push til `main` og ved pull requests mod `main`.
+- CI er delt i to parallelle jobs: en backend-shard til build, integrationstests, SonarQube og Docker-build, og en frontend-shard til Playwright browser-tests.
+
+Det betyder, at vi allerede nu har kontinuerlig integration.
+
+## Playwright
+
+```bash
+npm ci
+npx playwright install
+npm run test:e2e
+npm run test:e2e:codegen
+npm run test:e2e:headed
+```
+
+## Teststruktur
+
+- `src/test/java` er til Java- og JUnit-tests, som Maven kører via `mvn test` og `mvn verify`.
+- `src/test/e2e` er til Playwright-tests, som køres via `npm run test:e2e`.
+- `src/test/java/integrationtests` er til integrationstests mod de rigtige HTTP-endpoints, og de køres som et separat step i CI.
+- Maven kører ikke `.js`-filer. Playwright køres derfor som et separat CI-step i stedet for gennem `maven-surefire-plugin`.
+
+## SonarQube
+
+For at aktivere SonarQube i GitHub Actions skal du sætte disse repository-indstillinger:
+
+
+- Repository variable: `SONAR_HOST_URL`
+- Repository variable: `SONAR_PROJECT_KEY`
+- Repository variable: `SONAR_ORGANIZATION`
+- Repository secret: `SONAR_TOKEN`
+
+For SonarCloud vil værdierne typisk være:
+
+- `SONAR_HOST_URL=https://sonarcloud.io`
+- `SONAR_PROJECT_KEY=AhmadAlkaseb_first-assignment-by-bajls`
+- `SONAR_ORGANIZATION=` din SonarCloud-organisation
+
+Når de er sat, kører `ci.yml` automatisk SonarQube-analyse efter `mvn verify`. Hvis de ikke er sat endnu, springes SonarQube-trinnet over.
 
 ## API endpoints
 

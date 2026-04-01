@@ -1,0 +1,14 @@
+{
+  "name": "fake-info-playwright",
+  "private": true,
+  "scripts": {
+    "playwright:install": "playwright install --with-deps chromium",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed --workers=1",
+    "test:e2e:codegen": "playwright codegen http://localhost:8080/"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.53.2",
+    "http-server": "^14.1.1"
+  }
+}
