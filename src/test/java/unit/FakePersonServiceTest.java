@@ -936,54 +936,13 @@ class FakePersonServiceTest {
 
         // --- Invalid inputs ---
 
-        @Test
-        @DisplayName("throws IllegalArgumentException when n = 1 (one below minimum)")
-        void throwsForOneBelowMinimum() {
-            // Act & Assert
-            assertThatThrownBy(() -> service.getFakePersons(1))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("throws IllegalArgumentException when n = 0")
-        void throwsForZero() {
-            // Act & Assert
-            assertThatThrownBy(() -> service.getFakePersons(0))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("throws IllegalArgumentException when n is negative")
-        void throwsForNegativeInput() {
-            // Act & Assert
-            assertThatThrownBy(() -> service.getFakePersons(-1))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("throws IllegalArgumentException when n = 101 (one above maximum)")
-        void throwsForOneAboveMaximum() {
-            // Act & Assert
-            assertThatThrownBy(() -> service.getFakePersons(101))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @ParameterizedTest(name = "n = {0} should throw IllegalArgumentException")
+        @ParameterizedTest(name = "n = {0} should throw IllegalArgumentException with correct message")
         @ValueSource(ints = {-100, -1, 0, 1, 101, 200, 1000})
-        @DisplayName("rejects all out-of-range inputs with IllegalArgumentException")
+        @DisplayName("rejects all out-of-range inputs with IllegalArgumentException describing allowed range")
         void rejectsAllOutOfRangeInputs(int n) {
-            // Act & Assert
             assertThatThrownBy(() -> service.getFakePersons(n))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        @Test
-        @DisplayName("exception message for invalid n mentions the allowed range (2 to 100)")
-        void exceptionMessageDescribesAllowedRange() {
-            // Act & Assert
-            assertThatThrownBy(() -> service.getFakePersons(1))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("Parameter n must be between 2 and 100.");
         }
-    }
+}
 }
