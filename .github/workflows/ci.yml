@@ -1,87 +1,62 @@
 name: CI
 
+# Kør workflowet når der pushes til main, eller når en PR åbnes mod main.
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
-
-permissions:
-  contents: read
+    branches: [main]
 
 jobs:
-  backend:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      # Henter projektets kode ned på GitHub-runneren.
+      - uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      # Installerer Java og aktiverer Maven-cache for hurtigere builds.
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
           cache: maven
 
-      - name: Cache SonarQube packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+      # Kører alle Java-tests i src/test/java og bygger projektet.
+      - name: Run all backend tests
+        run: mvn -B --no-transfer-progress verify
 
-      - name: Build application
-        run: mvn --batch-mode --no-transfer-progress -DskipTests package
-
-      - name: Run integration tests
-        run: mvn --batch-mode --no-transfer-progress -Dtest=*IntegrationTest test
-
+      # Kører kun SonarQube hvis alle nødvendige GitHub variables/secrets findes.
       - name: Run SonarQube analysis
-        env:
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
-          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: bash
-        run: |
-          if [ -z "${SONAR_HOST_URL}" ] || [ -z "${SONAR_PROJECT_KEY}" ] || [ -z "${SONAR_ORGANIZATION}" ] || [ -z "${SONAR_TOKEN}" ]; then
-            echo "Skipping SonarQube analysis because SONAR_HOST_URL, SONAR_PROJECT_KEY, SONAR_ORGANIZATION, or SONAR_TOKEN is missing."
-            exit 0
-          fi
+        if: ${{ vars.SONAR_HOST_URL && vars.SONAR_PROJECT_KEY && vars.SONAR_ORGANIZATION && secrets.SONAR_TOKEN }}
+        run: >
+          mvn -B --no-transfer-progress
+          org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar
+          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+          -Dsonar.host.url=${{ vars.SONAR_HOST_URL }}
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
 
-          mvn --batch-mode --no-transfer-progress \
-            org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar \
-            -Dsonar.projectKey="${SONAR_PROJECT_KEY}" \
-            -Dsonar.organization="${SONAR_ORGANIZATION}" \
-            -Dsonar.host.url="${SONAR_HOST_URL}" \
-            -Dsonar.token="${SONAR_TOKEN}"
-
+      # Tjekker at Dockerfilen stadig kan bygge et image.
       - name: Build Docker image
         run: docker build --tag fake-info:ci .
 
-  frontend-e2e:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
+      # Installerer Node.js og bruger npm-cache til frontend-testene.
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
 
-      - name: Install Playwright dependencies
+      # Installerer frontend-afhængighederne fra package-lock.json.
+      - name: Install frontend dependencies
         run: npm ci
 
-      - name: Install Playwright browsers
+      # Henter Chromium og de systempakker Playwright har brug for i CI.
+      - name: Install Playwright
         run: npx playwright install --with-deps chromium
 
-      - name: Run Playwright tests
+      # Kører alle Playwright-tests i src/test/e2e.
+      - name: Run all frontend e2e tests
         run: npm run test:e2e
