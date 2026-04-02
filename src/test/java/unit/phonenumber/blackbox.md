@@ -1,29 +1,30 @@
-### Black box technique of: Mobile phone number
+### Black box technique: Mobile phone number
 
-**Equivalence partitions:       Test case values        Boundary values         Test case values**
-9 -> MAX INTEGER (invalid)      20                      9                       8 9 10
-8 (valid)                       8                       8                       7 8 9
-1-7 (invalid)                   5                       1 7                     0 1 2 6 7 8
-0                               0                       0                       0 1
+#### Phone number length
 
-Valid:      8
-Invalid:    0, 1, 2, 6, 7, 8, 9, 10, 20
+| Partition | Description | Boundary values | Representative test values |
+|---|---:|---:|---|
+| 9 → MAX INTEGER (invalid) | Too long | 20 | 20 |
+| 8 (valid) | Expected length | 8 | 7,8,9 |
+| 1–7 (invalid) | Too short | 1,7 | 0,1,2,6,7,8 |
+| 0 | Empty | 0 | 0,1 |
 
+**Country code length**
 
-Country codes
-4 -> MAX INTEGER (invalid)      20                      4                       3 4 5
-1 -> 3 (valid)                  2                       1 2                     1 2 3
-0 (invalid)                     0                       0                       0 1
+| Partition | Description | Boundary values | Representative test values |
+|---|---:|---:|---|
+| 4 → MAX INTEGER (invalid) | Too long | 20 | 20 |
+| 1–3 (valid) | Typical country codes | 1,2,3 | 1,2,3 |
+| 0 (invalid) | Empty | 0 | 0,1 |
 
-Valid:      1, 2, 3
-Invalid:    0, 4, 5, 20
+**List of test values**
+- Phone valid: 8
+- Phone invalid: 0,1,2,6,7,8,9,10,20
+- Country code valid: 1,2,3
+- Country code invalid: 0,4,5,20
 
-### Since we cannot have strings that are negative in length, we choose not to do that.
-
-### Edge cases
+**Edge cases**
 1. Invalid country code
 2. Invalid phone number length
-3. Phone number with non-numeric characters
-4. Phone number with leading zeros
-5. Country code with leading zeros
-6. Country code with non-numeric characters
+3. Non-numeric characters in phone number
+4. Leading zeros in phone number or country code

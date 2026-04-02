@@ -1,31 +1,19 @@
-### Black box technique of: Date of birth
+### Black box technique: Date of birth
 
-**Equivalence partitions:       Test case values        Boundary values         Test case values**
-Year
-3 → MAX INTEGER (invalid)       5                       3                       2 3 4 
-2 (valid)                       2                       2                       1 2 3
-1 (invalid)                     1                       1                       0 1 2
-0 (invalid)                     0                       0                       0 1
+#### Year / Month / Day (same partitioning applied to each component)
 
-Month
-3 → MAX INTEGER (invalid)       5                       3                       2 3 4   
-2 (valid)                       2                       2                       1 2 3
-1 (invalid)                     1                       1                       0 1 2
-0 (invalid)                     0                       0                       0 1
+| Partition | Description | Boundary values | Representative test values |
+|---|---:|---:|---|
+| 3 → MAX INTEGER (invalid) | Too large | 5 | 5, 4 |
+| 2 (valid) | Expected valid length | 2 | 1, 2, 3 |
+| 1 (invalid) | Too short | 1 | 0,1,2 |
+| 0 (invalid) | Empty | 0 | 0,1 |
 
-Day
-3 → MAX INTEGER (invalid)       5                       3                       2 3 4
-2 (valid)                       2                       2                       1 2 3
-1 (invalid)                     1                       1                       0 1 2
-0 (invalid)                     0                       0                       0 1
+**List of test values**
+- Valid: 2 (for each of year, month, day where 2-digit expected)
+- Invalid: 0, 1, 2, 3, 4, 5 (use as appropriate per field)
 
-List of test case values:
-Valid:      2
-Invalid:    0, 1, 2, 3, 4, 5
-
-### Since we cannot have strings that are negative in length, we choose not to do that.
-
-### Edge cases
-1. Invalid day
-2. Invalid month
-3. Invalid year
+**Edge cases**
+1. Invalid day (e.g., 31 in April)
+2. Invalid month (e.g., 00 or 13)
+3. Invalid year (out-of-range or century ambiguity)
