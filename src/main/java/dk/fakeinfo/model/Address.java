@@ -6,6 +6,9 @@ public record Address(
         String street,
         String number,
         Object floor,
+
+
+        
         Object door,
         @JsonProperty("postal_code") String postalCode,
         @JsonProperty("town_name") String townName
