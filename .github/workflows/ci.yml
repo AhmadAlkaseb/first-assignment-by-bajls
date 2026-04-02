@@ -1,0 +1,62 @@
+name: CI
+
+# Kør workflowet når der pushes til main, eller når en PR åbnes mod main.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Henter projektets kode ned på GitHub-runneren.
+      - uses: actions/checkout@v4
+
+      # Installerer Java og aktiverer Maven-cache for hurtigere builds.
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      # Kører alle Java-tests i src/test/java og bygger projektet.
+      - name: Run all backend tests
+        run: mvn -B --no-transfer-progress verify
+
+      # Kører kun SonarQube hvis alle nødvendige GitHub variables/secrets findes.
+      - name: Run SonarQube analysis
+        if: ${{ vars.SONAR_HOST_URL && vars.SONAR_PROJECT_KEY && vars.SONAR_ORGANIZATION && secrets.SONAR_TOKEN }}
+        run: >
+          mvn -B --no-transfer-progress
+          org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar
+          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+          -Dsonar.host.url=${{ vars.SONAR_HOST_URL }}
+          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+
+      # Tjekker at Dockerfilen stadig kan bygge et image.
+      - name: Build Docker image
+        run: docker build --tag fake-info:ci .
+
+      # Installerer Node.js og bruger npm-cache til frontend-testene.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      # Installerer frontend-afhængighederne fra package-lock.json.
+      - name: Install frontend dependencies
+        run: npm ci
+
+      # Henter Chromium og de systempakker Playwright har brug for i CI.
+      - name: Install Playwright
+        run: npx playwright install --with-deps chromium
+
+      # Kører alle Playwright-tests i src/test/e2e.
+      - name: Run all frontend e2e tests
+        run: npm run test:e2e
