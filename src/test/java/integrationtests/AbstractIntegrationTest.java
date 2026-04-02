@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
         classes = FakeInfoApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
         properties = {
+                // Kør integrationstests uden database/JPA, fordi repoet bliver mock'et.
                 "spring.autoconfigure.exclude="
                         + "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,"
                         + "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,"
@@ -34,8 +35,11 @@ abstract class AbstractIntegrationTest {
 
     @BeforeEach
     void setUpBase() {
+        // Peg RestAssured mod den tilfældige port Spring starter testen på.
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
+
+        // Giv alle integrationstests en stabil standard-postkode.
         when(postalCodeRepository.findRandomPostalCode())
                 .thenReturn(Optional.of(new PostalCode("2100", "Kobenhavn O")));
     }
