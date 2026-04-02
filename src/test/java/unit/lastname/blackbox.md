@@ -1,15 +1,14 @@
-### Black box technique of: Last name
+### Black box technique: Last name
 
-**Equivalence partitions:       Test case values        Boundary values         Test case values**
-1 → MAX-INTEGER (Valid)         10                      1                       0 1 2
-0 (invalid)                     0                       0                       0 1
+| Partition | Description | Boundary values | Representative test values |
+|---|---:|---:|---|
+| 1 → MAX-INTEGER (valid) | Min 1 char up to practical max | 1, 10 | 0,1,2,10 |
+| 0 (invalid) | Empty string | 0 | 0,1 |
 
-List of test case values:
-Valid:      1,2,10
-Invalid:    0
+**List of test values**
+- Valid: 1, 2, 10
+- Invalid: 0
 
-### Since we cannot have strings that are negative in length, we choose not to do that.
-
-### Edge cases
-1. Numbers expect to fail since numbers are not letters.
-2. Characters that is not the alphabet 
+**Notes / Edge cases**
+1. Numeric-only values — expect failure
+2. Non-alphabetic characters — validate policy

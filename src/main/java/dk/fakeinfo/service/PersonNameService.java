@@ -30,6 +30,10 @@ public class PersonNameService {
         }
     }
 
+    public void getLoadNames() throws IOException {
+        loadNames();
+    }
+
     public PersonName getRandomName() {
         int index = ThreadLocalRandom.current().nextInt(names.size());
         return names.get(index);

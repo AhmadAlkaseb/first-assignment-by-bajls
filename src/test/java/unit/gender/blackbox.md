@@ -1,15 +1,14 @@
-### Black box technique of: Gender
+### Black box technique: Gender
 
-**Equivalence partitions:       Test case values**
-male (Valid)                    male
-female (Valid)                  female
-Any other value (Invalid)       "", null
+| Allowed values | Description | Representative test values |
+|---|---:|---|
+| `male` | Valid | `male` |
+| `female` | Valid | `female` |
+| Any other value | Invalid | `""`, `null`, `other` |
 
-List of test case values:
-Valid:      male, female
-Invalid:    "", null, other
+**List of test values**
+- Valid: `male`, `female`
+- Invalid: `""`, `null`, `other`
 
-### Since gender is a fixed set of allowed values, boundary value analysis is not very relevant here.
-
-### Edge cases
-1. Numbers
+**Notes / Edge cases**
+1. Numeric values — expect invalid

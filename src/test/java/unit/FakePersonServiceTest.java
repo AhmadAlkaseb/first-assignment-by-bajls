@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * Black-box unit tests for FakePersonService.
- *
  * Strategy:
  *   - Dependencies (PersonNameService, PostalCodeRepository) are mocked so these tests
  *     run without a database or classpath JSON file.
