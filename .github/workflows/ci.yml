@@ -10,6 +10,11 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+      SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+      SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
       # Henter projektets kode ned på GitHub-runneren.
@@ -29,14 +34,14 @@ jobs:
 
       # Kører kun SonarQube hvis alle nødvendige GitHub variables/secrets findes.
       - name: Run SonarQube analysis
-        if: ${{ vars.SONAR_HOST_URL && vars.SONAR_PROJECT_KEY && vars.SONAR_ORGANIZATION && secrets.SONAR_TOKEN }}
+        if: ${{ env.SONAR_HOST_URL != '' && env.SONAR_PROJECT_KEY != '' && env.SONAR_ORGANIZATION != '' && env.SONAR_TOKEN != '' }}
         run: >
           mvn -B --no-transfer-progress
           org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar
-          -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
-          -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
-          -Dsonar.host.url=${{ vars.SONAR_HOST_URL }}
-          -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
+          -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
+          -Dsonar.token=${{ env.SONAR_TOKEN }}
 
       # Tjekker at Dockerfilen stadig kan bygge et image.
       - name: Build Docker image
